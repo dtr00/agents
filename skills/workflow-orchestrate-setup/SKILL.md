@@ -9,9 +9,9 @@ argument-hint: [dry-run]
 
 The user invoked `/workflow-orchestrate-setup` with: $ARGUMENTS
 
-If the arguments contain `dry-run`: do steps 1 to 3, print what you found and the config block you would write, and change nothing and ask nothing.
+If the arguments contain `dry-run`: do steps 0 to 3 (including 0b), print which copy you would configure and what you found and the config block you would write, and change nothing and ask nothing.
 
-Goal: make `/workflow-orchestrate` route Codex delegations across this machine's Codex accounts, in an order the user chooses. `/workflow-orchestrate` reads its accounts from the block between `<!-- ORCHESTRATE-CONFIG:BEGIN -->` and `<!-- ORCHESTRATE-CONFIG:END -->` in the `SKILL.md` of the `workflow-orchestrate` skill, which sits next to this skill's directory (the sibling named `workflow-orchestrate`, or `orchestrate` if it was installed under the short name). Setup is the only thing that rewrites that block.
+Goal: make `/workflow-orchestrate` route Codex delegations across this machine's Codex accounts, in an order the user chooses. `/workflow-orchestrate` reads its accounts from the block between `<!-- ORCHESTRATE-CONFIG:BEGIN -->` and `<!-- ORCHESTRATE-CONFIG:END -->` in the `SKILL.md` of the orchestrate skill that sits next to this skill (see "0b. Pick which orchestrate copy to configure"). Setup is the only thing that rewrites that block.
 
 Rules for the whole run:
 - Never print, copy or edit tokens or `auth.json` contents. The discovery helper reads the email and plan claims; use only those, to label accounts.
@@ -28,6 +28,14 @@ Setup must read the user's home folder (`~/.codex*`, `~/.claude.json`) and edit 
 - temporarily relax that permission setting.
 
 Don't try to work around the block with other tools or shells.
+
+## 0b. Pick which orchestrate copy to configure
+
+Configure the copy that sits next to this setup skill: the sibling directory named `workflow-orchestrate` (or `orchestrate` if it was installed under the short name). That is the copy the user is invoking, so a project-local install configures the project and a personal install configures the personal one. Follow the project's local skills; don't go looking elsewhere for a "better" copy.
+
+1. Resolve the absolute path of that copy's `SKILL.md`, and say whether it is project-local (inside the current project, for example `.claude/skills/` or `.agents/skills/`) or personal (`~/.claude/skills/`).
+2. Look for other copies named `orchestrate` or `workflow-orchestrate` in the current project's `.claude/skills/` and `.agents/skills/` and in `~/.claude/skills/`. List any you are not updating and ask whether to update them too. If a project copy and a personal copy both exist, warn that they can shadow each other and the user should keep one as the source of truth.
+3. If the chosen copy is inside a git repository, its config block will be committed with the project. Account routing belongs to the machine, so for such copies label accounts by plan only (for example `Plus`, `Team`), never by email, and tell the user why. Use emails only if they explicitly ask for them. The MCP servers are registered at user scope regardless.
 
 ## 1. Check prerequisites
 
@@ -74,7 +82,7 @@ For each chosen account that needs a new MCP server, register it at user scope. 
 
 If the chosen first account isn't `~/.codex` or the plugin server doesn't map to a chosen home, register every account as its own server and leave the plugin's server unused; say so.
 
-Then rewrite the block between the markers in the orchestrate skill's `SKILL.md` (edit only the lines between the markers), in this exact shape:
+Then rewrite the block between the markers in the copy chosen in step 0b (edit only the lines between the markers), in this exact shape:
 
 ```
 <!-- ORCHESTRATE-CONFIG:BEGIN -->
@@ -83,12 +91,12 @@ Then rewrite the block between the markers in the orchestrate skill's `SKILL.md`
 
 | Order | MCP server | Codex home | Account |
 |---|---|---|---|
-| 1 | `<server>` | `<home>` | <email> (<plan>) |
+| 1 | `<server>` | `<home>` | <label> (<plan>) |
 ...
 <!-- ORCHESTRATE-CONFIG:END -->
 ```
 
-Use `~/` for homes under the user's home folder. If the skill file or markers are missing, stop and tell the user the orchestrate skill needs reinstalling; don't create a second config.
+`<label>` is the email for a personal copy, and the plan alone for a copy inside a git repository (step 0b). Use `~/` for homes under the user's home folder. If the skill file or markers are missing, stop and tell the user the orchestrate skill needs reinstalling; don't create a second config.
 
 ## 6. Verify and report
 
