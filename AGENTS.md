@@ -25,7 +25,7 @@ Repository skills live under `.agents/skills/` and are grouped by namespace. Use
 - `frontend-*`: React, Vite, TanStack Start, Tailwind CSS and design tokens, shadcn, animation, visual design, UI polish, and frontend performance.
 - `pstack-*`: from Cursor's [pstack](https://github.com/cursor/plugins/tree/main/pstack) plugin by Lauren Tan (MIT), installed as dependencies of `quality-no-comments`: code walkthroughs, design rationale, design sketches, parallel candidates, adversarial review, and debugging principles.
 - `quality-*`: clean code principles, strict code quality reviews, AI slop cleanup, and comment cleanup.
-- `workflow-*`: minimal solutions, test-driven development, conventional commits, and pull requests (`workflow-pull-request`: description plus before and after images).
+- `workflow-*`: minimal solutions, test-driven development, conventional commits, pull requests (`workflow-pull-request`: description plus before and after images), and Codex orchestration (`workflow-orchestrate` plans, delegates to Codex accounts and verifies; `workflow-orchestrate-setup` maps the Codex accounts on a machine; both run only when invoked by name).
 
 Remove the groups a project does not use. Add a `backend-*` group (or any other) when the project needs one.
 
